@@ -3,36 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aircraft Incident Trends</title>
+    <title>Fatal Aircraft Incidents Over Time</title>
     <script src="https://d3js.org/d3.v7.min.js"></script> <!-- Load D3 library -->
     <link rel="stylesheet" href="style.css"> <!-- Connect to style.css for styles -->
-    <style>
-        /* Tooltip styling */
-        .tooltip {
-            position: absolute;
-            background: white;
-            border: 1px solid black;
-            padding: 5px;
-            border-radius: 5px;
-            display: none;
-        }
-    </style>
 </head>
 <body class="vertical-container">
     <!-- HEADER -->
     <div class="item">
-        <h1>Aircraft Incident Trends</h1>
-        <p><strong>Author(s):</strong> Aanyk Mann</p>
-        <p><strong>Documentation:</strong> 
-            <a href="YOUR_DOCUMENTATION_LINK_HERE" target="_blank">View project documentation</a>
-        </p>
+        <h1>Fatal Aircraft Incidents Over Time</h1>
+        <p><strong>Author(s):</strong> Aanyk Mann, Group 25</p>
+        <p><strong>Documentation:</strong> <a href="YOUR_LINK_HERE" target="_blank">Edit link in "index.html" on line 13. Give your document "Viewer" access to UW in share settings.</a></p>
+    </div>
+    
+    <!-- INTERACTIVE WIDGETS (Optional) -->
+    <!-- You can add interactive elements here if needed -->
+
+    <!-- CHART(S) -->
+    <div class="item chart-container">
+        <h2>[Chart 1 Title]</h2>
+        <svg id="lineChart1" width="900" height="400"></svg> <!-- If you change this ID name, you must change it in main.js too -->
     </div>
 
-    <!-- CHART -->
-    <div class="item chart-container">
-        <h2>Annual Aircraft Incidents</h2>
-        <div id="lineChart1"></div> <!-- Updated container for the chart -->
-    </div>
+    <!-- Since only one chart is required, the second chart has been removed -->
 
     <script src="main.js"></script>
 </body>
