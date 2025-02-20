@@ -3,36 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aircraft Incidents Visualization</title>
+    <title>Aircraft Incident Trends</title>
     <script src="https://d3js.org/d3.v7.min.js"></script> <!-- Load D3 library -->
     <link rel="stylesheet" href="style.css"> <!-- Connect to style.css for styles -->
+    <style>
+        /* Tooltip styling */
+        .tooltip {
+            position: absolute;
+            background: white;
+            border: 1px solid black;
+            padding: 5px;
+            border-radius: 5px;
+            display: none;
+        }
+    </style>
 </head>
 <body class="vertical-container">
     <!-- HEADER -->
     <div class="item">
-        <h1>Aircraft Incidents Visualization</h1>
-        <p><strong>Author(s):</strong> Your Name(s)</p>
-        <p>
-            <strong>Documentation:</strong>
-            <a href="https://your-documentation-link.com" target="_blank">
-                View project documentation
-            </a>
+        <h1>Aircraft Incident Trends</h1>
+        <p><strong>Author(s):</strong> Aanyk Mann</p>
+        <p><strong>Documentation:</strong> 
+            <a href="YOUR_DOCUMENTATION_LINK_HERE" target="_blank">View project documentation</a>
         </p>
-    </div>
-    
-    <!-- INTERACTIVE WIDGET (if needed) -->
-    <div class="item horizontal-container">
-        <div class="item">
-            <!-- Optional widget code goes here -->
-        </div>
     </div>
 
     <!-- CHART -->
     <div class="item chart-container">
-        <h2>Fatal Injuries by Year</h2>
-        <svg id="lineChart1" width="900" height="400"></svg>
+        <h2>Annual Aircraft Incidents</h2>
+        <div id="lineChart1"></div> <!-- Updated container for the chart -->
     </div>
-    
+
     <script src="main.js"></script>
 </body>
 </html>

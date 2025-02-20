@@ -3,70 +3,103 @@ const margin = { top: 50, right: 30, bottom: 60, left: 70 };
 const width = 900 - margin.left - margin.right;
 const height = 400 - margin.top - margin.bottom;
 
-// Create SVG container for the chart
-const svgLineChart = d3.select("#lineChart1") // Make sure this ID matches the one in index.html
+// Create SVG container for the single chart
+const svg1 = d3.select("#lineChart1") 
     .append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
-// 2: LOAD CSV DATA
+// Create tooltip div (hidden by default)
+const tooltip = d3.select("body")
+    .append("div")
+    .style("position", "absolute")
+    .style("background", "white")
+    .style("border", "1px solid black")
+    .style("padding", "5px")
+    .style("border-radius", "5px")
+    .style("display", "none");
+
+// Load and transform data
 d3.csv("aircraft_incidents.csv").then(data => {
-    console.log(data); // Check that the data loads properly.
+    console.log("Raw Data:", data); // Check if data loads correctly
 
-    // 2.b: TRANSFORM DATA
-    data.forEach(d => {
-        d.Event_Date_Years = +d.Event_Date_Years;
-        d.Total_Fatal_Injuries = +d.Total_Fatal_Injuries;
-        d.Total_Serious_Injuries = +d.Total_Serious_Injuries;
-        d.Total_Uninjured = +d.Total_Uninjured;
-    });
+    // Aggregate incidents by year
+    const incidentsByYear = d3.rollups(
+        data,
+        v => v.length, // Count incidents
+        d => +d.Event_Date_Years // Convert year to number
+    ).map(([year, count]) => ({ year, incidents: count }));
 
-    // 3: SET SCALES FOR THE CHART
+    console.log("Aggregated Data:", incidentsByYear); // Verify grouped data
+
+    // Set scales
     const xScale = d3.scaleLinear()
-        .domain(d3.extent(data, d => d.Event_Date_Years))
+        .domain(d3.extent(incidentsByYear, d => d.year)) 
         .range([0, width]);
-    
+
     const yScale = d3.scaleLinear()
-        .domain([0, d3.max(data, d => d.Total_Fatal_Injuries)])
+        .domain([0, d3.max(incidentsByYear, d => d.incidents)]) 
         .range([height, 0]);
 
-    // 4: PLOT DATA (a basic scatter plot)
-    svgLineChart.selectAll("circle")
-        .data(data)
+    // Plot line chart
+    const line = d3.line()
+        .x(d => xScale(d.year))
+        .y(d => yScale(d.incidents));
+
+    svg1.append("path")
+        .datum(incidentsByYear)
+        .attr("fill", "none")
+        .attr("stroke", "steelblue")
+        .attr("stroke-width", 2)
+        .attr("d", line);
+
+    // Plot data points (circles)
+    svg1.selectAll("circle")
+        .data(incidentsByYear)
         .enter()
         .append("circle")
-        .attr("cx", d => xScale(d.Event_Date_Years))
-        .attr("cy", d => yScale(d.Total_Fatal_Injuries))
-        .attr("r", 4)
-        .attr("fill", "steelblue");
+        .attr("cx", d => xScale(d.year))
+        .attr("cy", d => yScale(d.incidents))
+        .attr("r", 5)
+        .attr("fill", "red")
+        .attr("stroke", "black")
+        .style("cursor", "pointer")
+        .on("mouseover", (event, d) => {
+            tooltip.style("display", "block")
+                .html(`Year: ${d.year} <br> Incidents: ${d.incidents}`)
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY - 10) + "px");
+        })
+        .on("mousemove", (event) => {
+            tooltip.style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY - 10) + "px");
+        })
+        .on("mouseout", () => {
+            tooltip.style("display", "none");
+        });
 
-    // 5: ADD AXES FOR THE CHART
-    // X-axis at the bottom
-    svgLineChart.append("g")
+    // Add axes
+    svg1.append("g")
         .attr("transform", `translate(0, ${height})`)
-        .call(d3.axisBottom(xScale).tickFormat(d3.format("d")));
-    
-    // Y-axis on the left
-    svgLineChart.append("g")
+        .call(d3.axisBottom(xScale).ticks(10));
+
+    svg1.append("g")
         .call(d3.axisLeft(yScale));
 
-    // 6: ADD LABELS FOR THE CHART
-    // X-Axis Label
-    svgLineChart.append("text")
+    // Add labels
+    svg1.append("text")
         .attr("x", width / 2)
-        .attr("y", height + margin.bottom - 10)
-        .attr("text-anchor", "middle")
-        .text("Year of Incident");
-    
-    // Y-Axis Label
-    svgLineChart.append("text")
-        .attr("transform", "rotate(-90)")
-        .attr("y", -margin.left + 20)
-        .attr("x", -height / 2)
-        .attr("text-anchor", "middle")
-        .text("Total Fatal Injuries");
+        .attr("y", height + margin.bottom / 2)
+        .style("text-anchor", "middle")
+        .text("Year");
 
-    // 7: ADD INTERACTIVITY (Optional tooltip code can be added here)
-});
+    svg1.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -height / 2)
+        .attr("y", -margin.left / 1.5)
+        .style("text-anchor", "middle")
+        .text("Number of Incidents");
+
+}).catch(error => console.error("Error loading CSV file:", error));
