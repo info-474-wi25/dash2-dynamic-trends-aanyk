@@ -52,7 +52,7 @@ d3.csv("aircraft_incidents.csv").then(data => {
     // Save aggregated data globally for interactivity updates.
     globalAggregatedData = aggregatedData;
     
-    // Draw the initial chart using the slider's default value (1990).
+    // Draw the initial chart using the slider's default value.
     const initialMinYear = +d3.select("#yearSlider").property("value");
     updateChart(initialMinYear);
     
@@ -84,6 +84,36 @@ function updateChart(minYear) {
             .attr("fill", "none")
             .attr("stroke", "steelblue")
             .attr("stroke-width", 2)
+            .attr("d", d3.line()
+                .x(d => xScale(d.Year))
+                .y(d => yScale(d.Fatalities))
+            );
+    }
+    
+    // ADD TRENDLINE: compute linear regression if we have at least 2 points
+    if(filteredData.length > 1) {
+        const n = filteredData.length;
+        const sumX = d3.sum(filteredData, d => d.Year);
+        const sumY = d3.sum(filteredData, d => d.Fatalities);
+        const sumXY = d3.sum(filteredData, d => d.Year * d.Fatalities);
+        const sumX2 = d3.sum(filteredData, d => d.Year * d.Year);
+        const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+        const intercept = (sumY - slope * sumX) / n;
+        
+        // Get min and max year from filtered data for the trendline
+        const [minYearDomain, maxYearDomain] = d3.extent(filteredData, d => d.Year);
+        const trendData = [
+            { Year: minYearDomain, Fatalities: slope * minYearDomain + intercept },
+            { Year: maxYearDomain, Fatalities: slope * maxYearDomain + intercept }
+        ];
+        
+        // Draw the trendline as an orange dashed line
+        svg1_RENAME.append("path")
+            .datum(trendData)
+            .attr("fill", "none")
+            .attr("stroke", "orange")
+            .attr("stroke-width", 2)
+            .attr("stroke-dasharray", "5,5")
             .attr("d", d3.line()
                 .x(d => xScale(d.Year))
                 .y(d => yScale(d.Fatalities))
