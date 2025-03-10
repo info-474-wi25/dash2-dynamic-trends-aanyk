@@ -90,7 +90,7 @@ function updateChart(minYear) {
             );
     }
     
-    // ADD TRENDLINE: compute linear regression if we have at least 2 points
+    // ADD TRENDLINE
     if(filteredData.length > 1) {
         const n = filteredData.length;
         const sumX = d3.sum(filteredData, d => d.Year);
