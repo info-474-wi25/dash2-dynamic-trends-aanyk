@@ -111,7 +111,7 @@ function updateChart(minYear) {
         svg1_RENAME.append("path")
             .datum(trendData)
             .attr("fill", "none")
-            .attr("stroke", "orange")
+            .attr("stroke", "black")
             .attr("stroke-width", 2)
             .attr("stroke-dasharray", "5,5")
             .attr("d", d3.line()
